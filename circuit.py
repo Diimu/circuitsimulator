@@ -26,7 +26,7 @@ class Circuit:
         #i.e., all components attached to the circuit
 
     def __str__(self):
-        if not isinsnp.tance(self.f, np.ndarray):
+        if not isinstance(self.f, np.ndarray):
             freq, multi = find_si_prefix(self.f)
             ret = "{:.2f}+j{:2f} ohm at {:.2f} {:s}Hz:\n".format(self.Z.real, self.Z.imag, freq, multi)
         else:
@@ -84,8 +84,8 @@ class Circuit:
         self.components.append(('ser',Z))
         if np.size(self.f)==1 and self.draw_smith: #single frequency -> plot transition on smith chart
             tmp = np.logspace(np.log10(Z/1000), np.log10(Z), 100)
-            #impedance of a capacinp.tance array, starting from very large cap
-            #(large series capacinp.tance == small change in impedance)
+            #impedance of a capacitance array, starting from very large cap
+            #(large series capacitance == small change in impedance)
             tmp = ser(self.Z, tmp)
             #the array transformed into impedance
 
@@ -93,14 +93,14 @@ class Circuit:
             label = 'ser {:2g} {:s}$\Omega$'.format(scaled_value[0], scaled_value[1])
             skrf.plotting.plot_smith(self.refl(tmp), x_label='',y_label='', title='Smith chart, matching network', label=label)
             
-        self.Z += Z #after plotting, add series capacinp.tance to the current impedance
+        self.Z += Z #after plotting, add series capacitance to the current impedance
 
     def par(self, Z):
         self.components.append(('par',Z))
         if np.size(self.f)==1 and self.draw_smith: #single frequency -> plot transition on smith chart
             tmp = np.logspace(np.log10(Z*1000), np.log10(Z), 100)
-            #impedance of a capacinp.tance array, starting from very large cap
-            #(large series capacinp.tance == small change in impedance)
+            #impedance of a capacitance array, starting from very large cap
+            #(large series capacitance == small change in impedance)
             tmp = par(self.Z, tmp)
             #the array transformed into impedance
 
@@ -108,7 +108,7 @@ class Circuit:
             label = 'par {:2g} {:s}$\Omega$'.format(scaled_value[0], scaled_value[1])
             skrf.plotting.plot_smith(self.refl(tmp), x_label='',y_label='', title='Smith chart, matching network', label=label)
             
-        self.Z = par(Z, self.Z) #after plotting, add series capacinp.tance to the current impedance    
+        self.Z = par(Z, self.Z) #after plotting, add series capacitance to the current impedance    
         
    
     def sercap(self, C):
@@ -118,15 +118,15 @@ class Circuit:
         self.components.append(('sercap',C))
         if np.size(self.f)==1 and self.draw_smith: #single frequency -> plot transition on smith chart
             tmp = self.cap(np.logspace(np.log10(C*1000), np.log10(C), 100)) 
-            #impedance of a capacinp.tance array, starting from very large cap
-            #(large series capacinp.tance == small change in impedance)
+            #impedance of a capacitance array, starting from very large cap
+            #(large series capacitance == small change in impedance)
             tmp = ser(self.Z, tmp)
             #the array transformed into impedance
             scaled_value = find_si_prefix(C)
             label = 'ser {:2g} {:s}F'.format(scaled_value[0], scaled_value[1])
             skrf.plotting.plot_smith(self.refl(tmp), x_label='',y_label='', title='Smith chart, matching network', label=label)
             
-        self.Z = ser(self.Z, self.cap(C)) #after plotting, add series capacinp.tance to the current impedance
+        self.Z = ser(self.Z, self.cap(C)) #after plotting, add series capacitance to the current impedance
         
     def serind(self, L):
         '''
@@ -135,14 +135,14 @@ class Circuit:
         self.components.append(('serind',L))
         if np.size(self.f)==1 and self.draw_smith: #single frequency -> plot transition on smith chart
             tmp = self.ind(np.logspace(np.log10(L/1000), np.log10(L), 100)) 
-            #impedance of a capacinp.tance array, starting from very small inducnp.tance
+            #impedance of a capacitance array, starting from very small inductance
             tmp = ser(self.Z, tmp)
             #the array transformed into impedance
             scaled_value = find_si_prefix(L)
             label = 'ser {:2g} {:s}H'.format(scaled_value[0], scaled_value[1])
             skrf.plotting.plot_smith(self.refl(tmp), x_label='',y_label='', title='Smith chart, matching network', label=label)
             
-        self.Z = ser(self.Z, self.ind(L)) #after plotting, add series inducnp.tance to the current impedance
+        self.Z = ser(self.Z, self.ind(L)) #after plotting, add series inductance to the current impedance
         
     def parcap(self, C):
         '''
@@ -151,14 +151,14 @@ class Circuit:
         self.components.append(('parcap',C))
         if np.size(self.f)==1 and self.draw_smith: #single frequency -> plot transition on smith chart
             tmp = self.cap(np.logspace(np.log10(C/1000), np.log10(C), 100)) 
-            #impedance of a capacinp.tance array, starting from very small cap
+            #impedance of a capacitance array, starting from very small cap
             tmp = par(self.Z, tmp)
             #the array transformed into impedance
             scaled_value = find_si_prefix(C)
             label = 'ser {:2g} {:s}F'.format(scaled_value[0], scaled_value[1])
             skrf.plotting.plot_smith(self.refl(tmp), x_label='',y_label='', title='Smith chart, matching network', label=label)
             
-        self.Z = par(self.Z, self.cap(C)) #after plotting, add series capacinp.tance to the current impedance
+        self.Z = par(self.Z, self.cap(C)) #after plotting, add series capacitance to the current impedance
         
     def parind(self, L):
         '''
@@ -167,15 +167,15 @@ class Circuit:
         self.components.append(('parind',L))
         if np.size(self.f)==1 and self.draw_smith: #single frequency -> plot transition on smith chart
             tmp = self.ind(np.logspace(np.log10(L*1000), np.log10(L), 100)) 
-            #impedance of a capacinp.tance array, starting from very large inducnp.tance
-            #(large series capacinp.tance == small change in impedance)
+            #impedance of a capacitance array, starting from very large inductance
+            #(large series capacitance == small change in impedance)
             tmp = par(self.Z, tmp)
             #the array transformed into impedance
             scaled_value = find_si_prefix(L)
             label = 'par {:2g} {:s}H'.format(scaled_value[0], scaled_value[1])
             skrf.plotting.plot_smith(self.refl(tmp), x_label='',y_label='', title='Smith chart, matching network', label=label)
             
-        self.Z = par(self.Z, self.ind(L)) #after plotting, add series inducnp.tance to the current impedance
+        self.Z = par(self.Z, self.ind(L)) #after plotting, add series inductance to the current impedance
 
     def serline(self, kl, Z0=None):
         '''
