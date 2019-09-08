@@ -5,7 +5,7 @@ frequency (single point or array), impedance, and possibly a list
 of components that constitute the circuit.
 """
 
-from __future__ import division
+
 import numpy as np
 from scipy import *
 import matplotlib.pyplot as plt
@@ -19,6 +19,9 @@ class Circuit:
         self.Z0 = Z0
         self.draw_smith=draw_smith
         self.components = [('start', Z)]
+        
+        if size(self.f)==1 and self.draw_smith: #single frequency -> plot transition on smith chart
+            skrf.plotting.plot_smith(self.refl(self.Z), marker='o', color='k', linestyle=None,  x_label='',y_label='', title='Smith chart, matching network', label='start')
         #self.components is an array of tuples containing the history of the circuit,
         #i.e., all components attached to the circuit
 
@@ -88,7 +91,7 @@ class Circuit:
 
             scaled_value = find_si_prefix(Z)
             label = 'ser {:2g} {:s}$\Omega$'.format(scaled_value[0], scaled_value[1])
-            skrf.plot_smith(self.refl(tmp), x_label='',y_label='', title='Smith chart, matching network', label=label)
+            skrf.plotting.plot_smith(self.refl(tmp), x_label='',y_label='', title='Smith chart, matching network', label=label)
             
         self.Z += Z #after plotting, add series capacitance to the current impedance
 
@@ -103,7 +106,7 @@ class Circuit:
 
             scaled_value = find_si_prefix(Z)
             label = 'par {:2g} {:s}$\Omega$'.format(scaled_value[0], scaled_value[1])
-            skrf.plot_smith(self.refl(tmp), x_label='',y_label='', title='Smith chart, matching network', label=label)
+            skrf.plotting.plot_smith(self.refl(tmp), x_label='',y_label='', title='Smith chart, matching network', label=label)
             
         self.Z = par(Z, self.Z) #after plotting, add series capacitance to the current impedance    
         
@@ -121,7 +124,7 @@ class Circuit:
             #the array transformed into impedance
             scaled_value = find_si_prefix(C)
             label = 'ser {:2g} {:s}F'.format(scaled_value[0], scaled_value[1])
-            skrf.plot_smith(self.refl(tmp), x_label='',y_label='', title='Smith chart, matching network', label=label)
+            skrf.plotting.plot_smith(self.refl(tmp), x_label='',y_label='', title='Smith chart, matching network', label=label)
             
         self.Z = ser(self.Z, self.cap(C)) #after plotting, add series capacitance to the current impedance
         
@@ -137,7 +140,7 @@ class Circuit:
             #the array transformed into impedance
             scaled_value = find_si_prefix(L)
             label = 'ser {:2g} {:s}H'.format(scaled_value[0], scaled_value[1])
-            skrf.plot_smith(self.refl(tmp), x_label='',y_label='', title='Smith chart, matching network', label=label)
+            skrf.plotting.plot_smith(self.refl(tmp), x_label='',y_label='', title='Smith chart, matching network', label=label)
             
         self.Z = ser(self.Z, self.ind(L)) #after plotting, add series inductance to the current impedance
         
@@ -153,7 +156,7 @@ class Circuit:
             #the array transformed into impedance
             scaled_value = find_si_prefix(C)
             label = 'ser {:2g} {:s}F'.format(scaled_value[0], scaled_value[1])
-            skrf.plot_smith(self.refl(tmp), x_label='',y_label='', title='Smith chart, matching network', label=label)
+            skrf.plotting.plot_smith(self.refl(tmp), x_label='',y_label='', title='Smith chart, matching network', label=label)
             
         self.Z = par(self.Z, self.cap(C)) #after plotting, add series capacitance to the current impedance
         
@@ -170,7 +173,7 @@ class Circuit:
             #the array transformed into impedance
             scaled_value = find_si_prefix(L)
             label = 'par {:2g} {:s}H'.format(scaled_value[0], scaled_value[1])
-            skrf.plot_smith(self.refl(tmp), x_label='',y_label='', title='Smith chart, matching network', label=label)
+            skrf.plotting.plot_smith(self.refl(tmp), x_label='',y_label='', title='Smith chart, matching network', label=label)
             
         self.Z = par(self.Z, self.ind(L)) #after plotting, add series inductance to the current impedance
 
@@ -185,7 +188,7 @@ class Circuit:
         if size(self.f)==1 and self.draw_smith: #single frequency -> plot transition on smith chart
             tmp = line(self.Z, linspace(0, kl, 100), Z0) 
             label = 'line {:2g}'.format(kl)
-            skrf.plot_smith(self.refl(tmp), x_label='',y_label='', title='Smith chart, matching network', label=label)
+            skrf.plotting.plot_smith(self.refl(tmp), x_label='',y_label='', title='Smith chart, matching network', label=label)
             
         self.Z = line(self.Z, kl, Z0) 
 
@@ -200,7 +203,7 @@ class Circuit:
         if size(self.f)==1 and self.draw_smith: #single frequency -> plot transition on smith chart
             tmp = par(self.Z, line(Zl, linspace(0, kl, 100), Z0))
             label = 'par line {:2g}'.format(kl)
-            skrf.plot_smith(self.refl(tmp), x_label='',y_label='', title='Smith chart, matching network', label=label)
+            skrf.plotting.plot_smith(self.refl(tmp), x_label='',y_label='', title='Smith chart, matching network', label=label)
 
         self.Z = par(self.Z0, line(Zl, kl, Z0)) 
         
@@ -228,7 +231,7 @@ class Circuit:
             '''
             if size(self.f)>1:
                 plt.figure()
-                skrf.plot_smith(self.refl(), smith_r=smith_r, chart_type=chart_type, x_label=x_label,
+                skrf.plotting.plot_smith(self.refl(), smith_r=smith_r, chart_type=chart_type, x_label=x_label,
                 y_label=y_label, title=title, show_legend=show_legend,
                 axis=axis, ax=ax, force_chart = force_chart, *args, **kwargs)
                 
@@ -324,22 +327,9 @@ def db(Z, Z0=50):
         
         
 if __name__ == '__main__':
-    import doctest
-    doctest.testmod()    
-        
     plt.ion()
+    c = Circuit(64e6, 30)
+    c.sercap(30e-12)
+    c.parind(100e-9)
 
-    c = Circuit(64e6,35)
-    #c.sercap(100e-12)
-    #c.sercap(110e-12)
-    #c.ser(30)
-    #c.serind(100e-9)
-    c.parcap(100e-12)
-    c.par(100)
-    c.serind(30e-9)
-    #c.parind(30e-9)
-    #c.serline(0.3)
-    c.parline(0.8)
-    #print c.components
-    #print c.Z
 
