@@ -20,6 +20,7 @@ class Circuit:
         self.draw_smith=draw_smith
         self.components = [('start', Z)]
         
+
         if np.size(self.f)==1 and self.draw_smith: #single frequency -> plot transition on smith chart
             skrf.plotting.plot_smith(self.refl(self.Z), marker='o', color='k', linestyle=None,  x_label='',y_label='', title='Smith chart, matching network', label='start')
         #self.components is an array of tuples containing the history of the circuit,
